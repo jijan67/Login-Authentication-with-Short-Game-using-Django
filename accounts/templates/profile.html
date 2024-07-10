@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-card {
+            margin-top: 20px;
+        }
+        .custom-file-label::after {
+            content: "Browse";
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="profile-header">
+        <h2>Profile</h2>
+        <img src="{{ user.profile_image.url }}" alt="Profile Image" class="profile-img" data-toggle="modal" data-target="#uploadModal">
+    </div>
+
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-info" role="alert">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="card profile-card">
+        <div class="card-body">
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Name:</strong> {{ user.name }}</p>
+            <p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
+            <p><strong>Address:</strong> {{ user.address }}</p>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {% if user.is_authenticated %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Upload Profile Image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="profileImageInput" name="profile_image" required>
+                        <label class="custom-file-label" for="profileImageInput">Choose file</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+            {% else %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Login Required</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>You need to be logged in to upload a profile image.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // Update label text when a file is selected
+    $('#profileImageInput').on('change', function() {
+        var fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+</script>
+</body>
+</html>

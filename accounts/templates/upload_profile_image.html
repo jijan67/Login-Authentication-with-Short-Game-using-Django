@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Profile Image</title>
+    <!-- Bootstrap CSS (assuming you have it installed) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Optional: Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom CSS for styling -->
+    <style>
+        /* Example styling, adjust as needed */
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-upload {
+            position: relative;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .btn-upload input[type=file] {
+            position: absolute;
+            font-size: 100px;
+            opacity: 0;
+            right: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload Profile Image</h2>
+        <!-- Display form errors if any -->
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            <strong>Error:</strong> Please correct the following errors.
+            <ul>
+                {% for field, errors in form.errors.items %}
+                <li>{{ field|title }}: {{ errors|join:", " }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        <!-- Profile Image Upload Form -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.profile_image.label_tag }}
+                <div class="btn-upload">
+                    {{ form.profile_image }}
+                    <label for="id_profile_image" class="btn btn-primary"><i class="fas fa-upload"></i> Upload Image</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Save</button>
+        </form>
+    </div>
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar-nav .nav-item .nav-link {
+            color: white !important;
+        }
+        .navbar-nav .nav-item .nav-link:hover {
+            color: #ccc !important;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
+            margin-top: 50px;
+        }
+        .game-cell {
+            width: 100px;
+            height: 100px;
+            background-color: #f2f2f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            transition: background-color 0.3s ease;
+        }
+        .game-cell.x:before {
+            content: 'X';
+            animation: fadeIn 0.5s;
+        }
+        .game-cell.o:before {
+            content: 'O';
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .navbar-nav .nav-item .nav-link i {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">JR JIJAN</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="text-center mt-5">Home</h2>
+        <p class="text-center">Welcome to the home page! Enjoy a quick game of Tic-Tac-Toe below.</p>
+
+        <!-- Tic-Tac-Toe Game -->
+        <div class="game-board" id="gameBoard">
+            <div class="game-cell" data-cell></div>
+            <div class="game-cell" data-cell></div>
+            <div class="game-cell" data-cell></div>
+            <div class="game-cell" data-cell></div>
+            <div class="game-cell" data-cell></div>
+            <div class="game-cell" data-cell></div>
+            <div class="game-cell" data-cell></div>
+            <div class="game-cell" data-cell></div>
+            <div class="game-cell" data-cell></div>
+        </div>
+
+        <div class="text-center mt-3">
+            <button class="btn btn-primary" id="restartButton">Restart Game</button>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script>
+        const gameBoard = document.getElementById('gameBoard');
+        const cells = document.querySelectorAll('[data-cell]');
+        const restartButton = document.getElementById('restartButton');
+        const X_CLASS = 'x';
+        const O_CLASS = 'o';
+        const WINNING_COMBINATIONS = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+        let oTurn;
+
+        startGame();
+
+        restartButton.addEventListener('click', startGame);
+
+        function startGame() {
+            oTurn = false;
+            cells.forEach(cell => {
+                cell.classList.remove(X_CLASS);
+                cell.classList.remove(O_CLASS);
+                cell.innerHTML = '';
+                cell.removeEventListener('click', handleClick);
+                cell.addEventListener('click', handleClick, { once: true });
+            });
+        }
+
+        function handleClick(e) {
+            const cell = e.target;
+            const currentClass = oTurn ? O_CLASS : X_CLASS;
+            placeMark(cell, currentClass);
+            if (checkWin(currentClass)) {
+                setTimeout(() => {
+                    alert(`${currentClass.toUpperCase()} Wins!`);
+                    startGame();
+                }, 100);
+            } else if (isDraw()) {
+                setTimeout(() => {
+                    alert('Draw!');
+                    startGame();
+                }, 100);
+            } else {
+                swapTurns();
+            }
+        }
+
+        function placeMark(cell, currentClass) {
+            cell.classList.add(currentClass);
+            cell.innerHTML = `<div class="marker ${currentClass}"></div>`;
+        }
+
+        function swapTurns() {
+            oTurn = !oTurn;
+        }
+
+        function checkWin(currentClass) {
+            return WINNING_COMBINATIONS.some(combination => {
+                return combination.every(index => {
+                    return cells[index].classList.contains(currentClass);
+                });
+            });
+        }
+
+        function isDraw() {
+            return [...cells].every(cell => {
+                return cell.classList.contains(X_CLASS) || cell.classList.contains(O_CLASS);
+            });
+        }
+    </script>
+</body>
+</html>
